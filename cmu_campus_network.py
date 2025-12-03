@@ -68,14 +68,16 @@ end = 'Hunt Library'
 
 # YOUR CODE HERE: Use nx.shortest_path() to find the shortest route
 # shortest_path = 
-
+shortest_path = nx.shortest_path(G, source=start, target=end, weight='weight')
 # YOUR CODE HERE: Use nx.shortest_path_length() to find the walking time
 # walking_time = 
-
+walking_time = nx.shortest_path_length(G, source=start, target=end, weight='weight')
 # print(f"\nShortest route from {start} to {end}:")
 # print(f"  Route: {' -> '.join(shortest_path)}")
 # print(f"  Walking time: {walking_time} minutes")
-
+print(f"\nShortest route from {start} to {end}:")
+print(f"  Route: {' -> '.join(shortest_path)}")
+print(f"  Walking time: {walking_time} minutes")
 # ============================================================================
 # PART 4: Network Analysis
 # ============================================================================
@@ -85,7 +87,8 @@ print("Part 4: Analyzing the network...")
 print("\nConnections per building:")
 for building in G.nodes():
     # YOUR CODE HERE: Use G.degree(building) to get the number of connections
-    pass
+    degree = G.degree(building)
+    print(f"  {building:25s}: {degree} connections")
     # degree = 
     # print(f"  {building:25s}: {degree} connections")
 
@@ -93,7 +96,9 @@ for building in G.nodes():
 # betweenness = 
 # most_central = max(betweenness, key=betweenness.get)
 # print(f"\nMost central building: {most_central}")
-
+betweenness = nx.betweenness_centrality(G, weight='weight')
+most_central = max(betweenness, key=betweenness.get)
+print(f"\nMost central building: {most_central}")
 # ============================================================================
 # PART 5: Visualization
 # ============================================================================
@@ -140,9 +145,21 @@ print("Network exported to cmu_networks.graphml (can be opened in other tools)")
 # ============================================================================
 print("\n1. Find ALL possible paths from Gates Hillman Center to Hunt Library:")
 # TODO: Use nx.all_simple_paths() to find all routes
-
-print("\n2. What if Wean Hall is closed for construction?")
+all_paths = list(nx.all_simple_paths(G, source=start, target=end))
+for i, path in enumerate(all_paths, 1):
+    print(f"  Path {i}: {' -> '.join(path)}")
+print("\n2. Recalculate shortest path after removing Wean Hall:")
 # TODO: Remove Wean Hall and recalculate the shortest path
+G_without_wean = G.copy()
+G_without_wean.remove_node('Wean Hall')
+
+new_path = nx.shortest_path(G_without_wean, source=start, target=end, weight='weight')
+new_time = nx.shortest_path_length(G_without_wean, source=start, target=end, weight='weight')
+
+print(f"  New route without Wean Hall: {' -> '.join(new_path)}")
+print(f"  Walking time: {new_time} minutes")
 
 print("\n3. Calculate the average walking time between any two buildings:")
 # TODO: Use nx.average_shortest_path_length()
+avg_walking_time = nx.average_shortest_path_length(G, weight='weight')
+print(f"  Average walking time: {avg_walking_time:.2f} minutes")
